@@ -41,7 +41,7 @@ jobs:
   deploy:
     environment:
       name: github-pages
-      url: "https://learn.zh_cn.symbol-community.com"
+      url: "https://learn.zh-cn.symbol-community.com"
     runs-on: ubuntu-latest
     needs: build
     steps:
