@@ -1,13 +1,13 @@
-# 8.Lock
+# 8.锁定
 
-The Symbol blockchain has two types of LockTransactions: Hash Lock Transaction and Secret Lock Transaction.  
+区块链有两种锁定交易：哈希锁定交易和秘密锁定交易。  
 
-## 8.1 Hash Lock
+## 8.1 哈希锁 Hash Lock
 
-Hash Lock Transactions enable a transaction to be be announced later. The transaction is stored in every node's partial cache with a hash value until the transaction is announced. The transaction is locked and not processed on the API node until it is signed by all cosignatories. It does not lock the tokens owned by the account but a 10 XYM deposit is paid by the initiator of the transaction. The locked funds will be refunded to the initiating account when the Hash Lock transaction is fully signed.  The maximum validity period of a Hash Lock Transaction is approximately 48 hours, if the transaction is not completed within this time period then the 10 XYM deposit is lost.
+哈希锁定交易可以让交易在稍后公布。交易会以哈希值的形式存储在每个节点的部分快取中，直到交易被公布。交易被锁定，在 API 节点上不进行处理，直到它被所有共同签署者签署。它不会锁定帐户所拥有的代币，但交易发起者需要支付10 XYM的押金。当哈希锁定交易完全签署时，被锁定的资金将退还给发起交易的帐户。哈希锁定交易的最大有效期为约48小时，如果交易在此期限内未完成，则10 XYM押金将会丢失。
 
 
-### Creation of an Aggregate Bonded Transaction.
+### 创建聚合绑定交易。
 
 ```js
 bob = sym.Account.generateNewAccount(networkType);
@@ -50,11 +50,12 @@ aggregateTx = sym.AggregateTransaction.createBonded(
 signedAggregateTx = alice.sign(aggregateTx, generationHash);
 ```
 
-Specify the public key of the sender's account when two transactions, tx1 and tx2, are arrayed in AggregateArray. Get the public key in advance via the API with reference to the Account chapter. Arrayed transactions are verified for integrity in this order during block approval.
 
-For example, it is possible to send an NFT from Alice to Bob in tx1 and then from Bob to Carol in tx2, but changing the order of the Aggregate Transaction to tx2,tx1 will result in an error. In addition, if there is even one inconsistent transaction in the Aggregate transaction, the entire Aggregate transaction will fail and will not be approved into the chain.
+当两笔交易 tx1 和 tx2 排列在 AggregateArray 中时，指定发送方账户的公钥。参考账户章节通过API提前获取公钥。在区块批准期间，按此顺序验证排列的交易的完整性。
 
-### Creation, signing and announcement of Hash Lock Transaction
+例如，可以在交易1中从 Alice 发送一个 NFT 给 Bob，然后在交易2中从 Bob 发送给 Carol，但如果更改汇总交易的顺序为交易2、交易1，将导致错误。此外，如果汇总交易中有任何不一致的交易，整个汇总交易将失败，并且不会被批准进入区块链。
+
+### 哈希锁交易的创建、签署和公告
 ```js
 //Creation of Hash Lock TX
 hashLockTx = sym.HashLockTransaction.create(
@@ -72,16 +73,16 @@ signedLockTx = alice.sign(hashLockTx, generationHash);
 await txRepo.announce(signedLockTx).toPromise();
 ```
 
-### Announcement of Aggregate Bonded Transaction
+### 聚合绑定交易的公告
 
-After checking with e.g. Explorer, announce the Bonded Transaction to the network.
+与例如检查后 Explorer，向网络宣布保税交易。
 ```js
 await txRepo.announceAggregateBonded(signedAggregateTx).toPromise();
 ```
 
 
-### Co-signature
-Co-sign the locked transaction from the specified account (Bob).
+### 联署
+从指定账户 (Bob) 共同签署锁定的交易。
 
 ```js
 txInfo = await txRepo.getTransaction(signedAggregateTx.hash,sym.TransactionGroup.Partial).toPromise();
@@ -90,18 +91,18 @@ signedCosTx = bob.signCosignatureTransaction(cosignatureTx);
 await txRepo.announceAggregateBondedCosignature(signedCosTx).toPromise();
 ```
 
-### Note
-Hash Lock Transactions can be created and announced by anyone, not just the account that initially creates and signs the transaction. But make sure that the Aggregate Transaction includes a transaction for whom the account is the signer. Dummy transactions with no mosaic transmission and no message are valid.
+### 参考资料
+哈希锁交易可以由任何人创建和公布，而不仅仅是最初创建和签署交易的帐户。但要确保聚合交易包括该账户是签名者的交易。没有马赛克传输和没有消息的虚拟交易是有效的。
 
 
-## 8.2 Secret Lock・Secret Proof
+## 8.2 秘密锁・秘密证明
 
-The secret lock creates a common password in advance and locks the designated mosaic. This allows the recipient to receive the locked mosaic if they can prove that they possess the password before the lock expiry date.
+秘密锁定交易是指事先建立一个共同的密码，并将指定的代币锁定起来。如果接收者能够在锁定到期日期之前证明自己拥有密码，那么他们就可以接收到被锁定的代币。
 
-This section describes how Alice locks 1XYM and Bob unlocks the transaction to receive the funds.
+本节介绍 Alice 如何锁定 1XYM，Bob 如何解锁交易以接收资金。
 
-First, create a Bob account to interact with Alice.
-Bob needs to announce the transaction to unlock the transaction, so please request 10XYM from the faucet.
+首先，创建一个 Bob 帐户与 Alice 进行交互。
+Bob需要公布交易才能解锁交易，请向水龙头索取10XYM。
 
 ```js
 bob = sym.Account.generateNewAccount(networkType);
@@ -111,9 +112,9 @@ console.log(bob.address);
 console.log("https://testnet.symbol.tools/?recipient=" + bob.address.plain() +"&amount=10");
 ```
 
-### Secret Lock
+### 秘密锁
 
-Create a common pass for locking and unlocking.
+创建用于锁定和解锁的通用通行证。
 
 ```js
 sha3_256 = require('/node_modules/js-sha3').sha3_256;
@@ -126,13 +127,13 @@ console.log("secret:" + secret);
 console.log("proof:" + proof);
 ```
 
-###### Sample output
+###### 市例演示
 ```js
 > secret:f260bfb53478f163ee61ee3e5fb7cfcaf7f0b663bc9dd4c537b958d4ce00e240
   proof:7944496ac0f572173c2549baf9ac18f893aab6d0
 ```
 
-Creating, signing and announcing transaction
+创建、签署和宣布交易
 ```js
 lockTx = sym.SecretLockTransaction.create(
     sym.Deadline.create(epochAdjustment),
@@ -151,22 +152,22 @@ signedLockTx = alice.sign(lockTx,generationHash);
 await txRepo.announce(signedLockTx).toPromise();
 ```
 
-The LockHashAlgorithm is as follows
+锁定哈希算法如下
 ```js
 {0: 'Op_Sha3_256', 1: 'Op_Hash_160', 2: 'Op_Hash_256'}
 ```
 
-At the time of locking, the unlock destination is specified by Bob, thus the destination account (Bob) cannot be changed even if an account other than Bob unlocks the transaction.
+锁定时，解锁目的地由Bob指定，因此即使Bob以外的账户解锁交易，也无法更改目的地账户（Bob）。
 
-The maximum lock period is 365 days (counting number of blocks in days).
+最长锁定期为 365 天（以天为单位计算区块数）。
 
-Check the approved transactions.
+检查已批准的交易。
 ```js
 slRepo = repo.createSecretLockRepository();
 res = await slRepo.search({secret:secret}).toPromise();
 console.log(res.data[0]);
 ```
-###### Sample output
+###### 市例演示
 ```js
 > SecretLockInfo
     amount: UInt64 {lower: 1000000, higher: 0}
@@ -181,13 +182,13 @@ console.log(res.data[0]);
     status: 0
     version: 1
 ```
-It shows that Alice who locked the transaction is recorded in ownerAddress and the Bob is recorded in recipientAddress.
-The information about the secret is published and Bob informs the network of the corresponding proof.
+这表明锁定交易的 Alice 被记录在 ownerAddress 中，而 Bob 被记录在 recipientAddress 中。
+有关秘密的信息被公布，Bob 将相应的证明通知网络。
 
 
-### Secret Proof
+### 秘密证明
 
-Unlock the transaction using the secret proof. Bob must have obtained the secret proof in advance.
+使用秘密证明解锁交易。 Bob一定是提前拿到了秘密证明。
 
 
 ```js
@@ -204,12 +205,12 @@ signedProofTx = bob.sign(proofTx,generationHash);
 await txRepo.announce(signedProofTx).toPromise();
 ```
 
-Confirm the approval result.
+确认审批结果。
 ```js
 txInfo = await txRepo.getTransaction(signedProofTx.hash,sym.TransactionGroup.Confirmed).toPromise();
 console.log(txInfo);
 ```
-###### Sample output
+###### 市例演示
 ```js
 > SecretProofTransaction
   > deadline: Deadline {adjustedValue: 12669305546}
@@ -230,7 +231,7 @@ console.log(txInfo);
     type: 16978
 ```
 
-The SecretProofTransaction does not contain information about the amount of any mosaics received. Check the amount in the receipt created when the block is generated. Search for receipts addressed to Bob with receipt type:LockHash_Completed.
+秘密证明交易不包含任何接收到的代币数量的信息。请在区块生成时创建的收据中检查数量。搜索收据地址为 Bob，收据类型为 LockHash_Completed。
 
 
 ```js
@@ -242,7 +243,7 @@ receiptInfo = await receiptRepo.searchReceipts({
 }).toPromise();
 console.log(receiptInfo.data);
 ```
-###### Sample output
+###### 市例演示
 ```js
 > data: Array(1)
   >  0: TransactionStatement
@@ -256,7 +257,7 @@ console.log(receiptInfo.data);
               type: 8786
 ```
 
-ReceiptTypes are as follows:
+收据类型如下：
 
 ```js
 {4685: 'Mosaic_Rental_Fee', 4942: 'Namespace_Rental_Fee', 8515: 'Harvest_Fee', 8776: 'LockHash_Completed', 8786: 'LockSecret_Completed', 9032: 'LockHash_Expired', 9042: 'LockSecret_Expired', 12616: 'LockHash_Created', 12626: 'LockSecret_Created', 16717: 'Mosaic_Expired', 16718: 'Namespace_Expired', 16974: 'Namespace_Deleted', 20803: 'Inflation', 57667: 'Transaction_Group', 61763: 'Address_Alias_Resolution', 62019: 'Mosaic_Alias_Resolution'}
@@ -265,17 +266,17 @@ ReceiptTypes are as follows:
 9042: 'LockSecret_Expired'　：LockSecret is expired
 ```
 
-## 8.3 Tips for use
+## 8.3 使用提示
 
 
-### Paying the transaction fee instead
+### 支付交易费用
 
-Generally blockchains require transaction fees for sending transactions. Therefore, users who want to use blockchains need to obtain the native currency of the chain to pay fees (e.g. Symbol's native currency XYM) from the exchange in advance. If the user is a company, the way it is managed might be an issue from an operational point of view. If using Aggregate Transactions, service providers can cover hash lock and transaction fees on behalf of users.
+一般而言，区块链要求在发送交易时支付交易费用。因此，想要使用区块链的使用者需要事先从交易所获取该链的本地货币（例如 Symbol 的本地货币 XYM）来支付费用。如果使用者是一家公司，从运营角度来看，这样的管理方式可能会成为一个问题。使用聚合交易，服务提供商可以代表使用者支付秘密锁定和交易费用。
 
-### Scheduled transactions
+### 预定交易
 
-Secret locks are refunded to the account that created the transaction after a specified number of blocks.
-When the service provider charges the cost of the lock for the Secret Lock account, the amount of tokens owned by the user for the lock will increase after the expiry date has passed. On the other hand, announcing a secret proof transaction before the deadline has passed is treated as a cancellation as the transaction is completed and the funds are returned to the service provider.
+在指定数量的块后，秘密锁将退还给创建交易的帐户。
+当服务提供商为 Secret Lock 账户收取锁的费用时，用户拥有的锁的代币数量将在到期日后增加。另一方面，在截止日期之前宣布秘密证明交易将被视为取消，因为交易已完成并且资金将退还给服务提供商。
 
-### Atomic swaps
-Secret locks can be used to exchange  mosaics (tokens) with other chains. Please note that other chains refer to this as a hash time lock contract (HTLC)  not to be mistaken for a Symbol Hash Lock.
+### 原子互换
+秘密锁定可以用于与其他链进行代币交换。请注意，其他链将其称为哈希时间锁定合约（HTLC），不要与 Symbol 的哈希锁定混淆。
