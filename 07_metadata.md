@@ -1,17 +1,17 @@
-# 7.Metadata
+# 7.元数据
 
-Key-Value format data can be registered for an account mosaic namespace. The maximum value of data that can be written is 1024 bytes.
-We make the assumption that both mosaic, namespace and account are created by Alice in this chapter.
+为帐户镶嵌命名空间注册Key-Value格式数据。可写入的数据的最大值为 1024 字节。
+本章我们假设 mosaic、namespace 和 account 都是 Alice 创建的。
 
-Before running the sample scripts in this chapter, please load the following libraries:
+在运行本章示例脚本之前，请加载以下资料库：
 ```js
 metaRepo = repo.createMetadataRepository();
 mosaicRepo = repo.createMosaicRepository();
 metaService = new sym.MetadataTransactionService(metaRepo);
 ```
-## 7.1 Register for account
+## 7.1 注册账号
 
-Register a Key-Value for the account.
+为帐户注册一个Key-Value。
 
 ```js
 key = sym.KeyGenerator.generateUInt64Key("key_account");
@@ -35,10 +35,10 @@ signedTx = alice.sign(aggregateTx,generationHash);
 await txRepo.announce(signedTx).toPromise();
 ```
 
-Registration of metadata requires a signature of the account to which it is recorded.
-Even if the registration destination account and the sender account are the same, an aggregate transaction is required.
+元数据的注册需要记录它的帐户的签名。
+即使注册目的地账户和发送者账户相同，也需要聚合交易。
 
-When registering metadata to different accounts, use "signTransactionWithCosignatories" to sign it.
+当将元数据注册到不同的帐户时，请使用“用共签人签署交易”进行签署。
 
 ```js
 tx = await metaService.createAccountMetadataTransaction(
@@ -61,12 +61,12 @@ signedTx = aggregateTx.signTransactionWithCosignatories(
 await txRepo.announce(signedTx).toPromise();
 ```
 
-In case you don't know Bob's private key, Aggregate Bonded Transactions which are explained in the chapters that follow or offline signing must be used.
+如果您不知道 Bob 的私钥，则必须使用后续章节中解释的聚合绑定交易或离线签名。
 
-## 7.2 Register to a mosaic
+## 7.2 注册到马赛克
 
-Register a value with the composite key of the key value/source account for the target mosaic.
-The signature of the account that created the mosaic is required for registering and updating metadata.
+使用元帐户的键值/复合键来为目标马赛克注册值。
+注册和更新元数据需要创建马赛克的帐户的签名。
 
 ```js
 mosaicId = new sym.MosaicId("1275B0B7511D9161");
@@ -94,10 +94,10 @@ signedTx = alice.sign(aggregateTx,generationHash);
 await txRepo.announce(signedTx).toPromise();
 ```
 
-## 7.3 Register for namespace
+## 7.3 注册命名空间
 
-Register a Key-Value for the namespace.
-The signature of the account that created the mosaic is required for registering and updating metadata.
+注册命名空间的 Key-Value。
+注册和更新元数据需要创建马赛克的帐户的签名。
 
 ```js
 nsRepo = repo.createNamespaceRepository();
@@ -125,8 +125,8 @@ signedTx = alice.sign(aggregateTx,generationHash);
 await txRepo.announce(signedTx).toPromise();
 ```
 
-## 7.4 Confirmation
-Check the registered metadata.
+## 7.4 确认
+检查注册的元数据。
 
 ```js
 res = await metaRepo.search({
@@ -135,7 +135,7 @@ res = await metaRepo.search({
 ).toPromise();
 console.log(res);
 ```
-###### Sample output
+###### 市例演示
 ```js
 data: Array(3)
   0: Metadata
@@ -171,26 +171,26 @@ data: Array(3)
       id: Id {lower: 646738821, higher: 2754876907}
       value: "test"
 ```
-The metadataType is as follows.
+元数据类型如下。
 ```js
 sym.MetadataType
 {0: 'Account', 1: 'Mosaic', 2: 'Namespace'}
 ```
 
-### Note
-While metadata has the advantage of providing quick access to information by Key-Value, it should be noted that it needs updating.
-Updating requires the signatures of the issuer account and the account to which it is registered, so it should only be used if both accounts can be trusted.
+### 注意事项
+虽然元数据具有通过 Key-Value 提供对信息的快速访问的优势，但应该注意它需要更新。
+更新需要发行人账户和注册账户的签名，所以只有在两个账户都可以信任的情况下才应该使用它。
 
 
-## 7.5 Tips for use
+## 7.5 使用提示
 
-### Proof of eligibility
+### 资格证明
 
-We described proof of ownership in the Mosaic chapter and domain linking in the Namespace chapter.
-By receiving metadata issued by an account linked from a reliable domain can be used for proofing of ownership of eligibility within that domain.
+我们在 马赛克 一章中描述了所有权证明，在命名空间一章中描述了域链接。
+通过接收从可靠域链接的帐户发布的元数据，可以用于证明该域内的资格所有权。
 
-#### DID (Decentralized identity)
+#### DID（去中心化身份）
 
-The ecosystem is divided into issuers, owners and verifiers, e.g. students own the diplomas issued by universities, and companies verify the certificates presented by the students based on the public keys published by the universities.
-There is no platform-dependent or third party-dependent information required for this verification.
-By utilising metadata in this way, universities can issue metadata to accounts owned by students, and companies can verify the proof of graduation listed in the metadata with the university's public key and the student's mosaic (account) proof of ownership.
+生态系统分为发行者、拥有者和验证者，例如，学生拥有大学颁发的文凭，公司根据大学公布的公钥验证学生提交的证书。
+此验证不需要依赖平台或第三方的信息。
+通过这种方式利用元数据，大学可以向学生拥有的帐户发行元数据，公司可以通过验证大学公开密钥和学生的马赛克（帐户）拥有证明，验证元数据中列出的毕业证明。
