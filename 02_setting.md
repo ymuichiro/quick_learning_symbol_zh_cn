@@ -1,70 +1,70 @@
-# 2.Building a development environment
+# 2.建立开发环境
 
-This section explains how to read this document.
+这个章节说明如何阅读本文件。
 
-## 2.1 Language
+## 2.1 语言
 
-All code will be written in JavaScript.
+所有的程式码都将使用 JavaScript 撰写。
 
-### SDK
+### SDK-软体开发套件
 
 symbol-sdk-typescript-javascript v2.0.0  
 https://github.com/symbol/symbol-sdk-typescript-javascript
 
-Load The SDK above as browserify in the browser developer console.  
+在浏览器的开发人员控制台中，将上面的 SDK 作为 Browserify 载入。  
 https://github.com/xembook/nem2-browserify
 
-##### Note
+##### 注意事项
 
-Currently symbol-sdk v3.0.0 is released in alpha version, v 2.0.3 is deprecated.  
-And version 3 removed many of the rxjs-dependent features thus direct access to the REST API is recommended.
+目前 symbol-sdk 的 alpha 版本是 3.0.0，2.0.3 版本已不再支援。  
+版本 3 移除了许多 rxjs 依赖的功能，因此建议直接存取 REST API。
 
-### Reference
+### 参考文献
 
-Symbol SDK for TypeScript and JavaScript  
+Symbol SDK 支援 TypeScript 和 JavaScript  
 https://symbol.github.io/symbol-sdk-typescript-javascript/1.0.3/
 
-Catapult REST Endpoints (1.0.3)  
+Catapult REST端点 (1.0.3)  
 https://symbol.github.io/symbol-openapi/v1.0.3/
 
-## 2.2 Sample source code
+## 2.2 范例原始码
 
-### Variable declaration
+### 变数宣告
 
-In this document, we do not declare const because we want you to rewrite it repeatedly on the console to verify that it works. When developing applications, ensure security by declaring const.
+本文件中，我们没有宣告 const，是希望您在控制台上重复编写它以验证其是否正常运作。当开发应用程序时，请通过声明 const 确保安全性。
 
-### Check output value
+### 检查输出值
 
-Console.log() outputs the contents of the variable. Try out the output functions according to your preferences. The output is described under `>`. When practicing with a sample, try it without this part.
+Console.log() 会输出该变数的内容。依照个人偏好，可以试着使用输出函数。输出结果会在 > 下方。在练习范例时，可以不包含这部分的内容。
 
-### Synchronous and asynchronous
+### 同步和非同步
 
-Some developers used to other languages may feel uneasy writing asynchronous processing, so unless there is a particular reason, the explanations are written without asynchronous processing.
+有些习惯于其他语言的开发者可能会因为不习惯写非同步处理而感到不安，因此除非有特殊需求，本文中的解释都是不使用非同步处理的。
 
-### Account
+### 帐户
 
 #### Alice
 
-This manual focuses on the Alice account. We will continue to use the Alice account created in chapter 3 in subsequent chapters. Please go on reading this manual with sufficient XYM sent.
+本手册着重于介绍 Alice 帐户。我们将在后续章节中继续使用第三章中创建的 Alice 帐户。请确保 Alice 帐户中有足够的 XYM，然后继续阅读本手册。
 
 #### Bob
 
-Bob is created as an account for transacting with Alice, as required in the chapters. Others, such as Carol, are used in the multisig chapters.
+Bob 被创建成为与 Alice 进行交易所需的帐户，作为后续章节中的对象。其他人，例如 Carol，在多签章节中使用。
 
-### Fee
+### 手续费
 
-In this document, transactions are created with a transaction fee multiplier of 100.
+在本文件中，交易使用的交易费用乘数为 100。
 
-## 2.3 Preparations in advance
+## 2.3 事先准备工作
 
-From the node list, open the page of any node with e.g. Chrome browser. This manual is based on the assumption of a testnet.
+从节点清单中，使用 Chrome 浏览器打开任何节点的页面。本手册基于测试网的假设。
 
-- Testnet
+- 测试网
   - https://symbolnodes.org/nodes_testnet/
-- Mainnet
+- 主网
   - https://symbolnodes.org/nodes/
 
-Press F12 to open the developer console, and enter the following script.
+按 F12 键开启开发人员控制台，并输入以下脚本。
 
 ```js
 (script = document.createElement("script")).src =
@@ -72,7 +72,7 @@ Press F12 to open the developer console, and enter the following script.
 document.getElementsByTagName("head")[0].appendChild(script);
 ```
 
-Then, run the common logic that is used in almost all chapters.
+然后，运行在几乎所有章节中使用的通用逻辑。
 
 ```js
 NODE = window.origin; //The URL of the page is shown here.
@@ -92,7 +92,7 @@ function clog(signedTx) {
 }
 ```
 
-You are now ready to go.
-If the content of this manual is a little confusing, please refer to the Qiita article.
+您现在已经准备就绪。
+如果本手册的内容有些令人困惑，请参考 Qiita 的文章。
 
-[Symbol ブロックチェーンのテストネットで送金を体験する](https://qiita.com/nem_takanobu/items/e2b1f0aafe7a2df0fe1b)
+[在Symbol区块链测试网体验转帐的过程](https://qiita.com/nem_takanobu/items/e2b1f0aafe7a2df0fe1b)
