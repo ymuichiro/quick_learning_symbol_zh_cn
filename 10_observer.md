@@ -1,10 +1,10 @@
-# 10. Monitoring
+# 10. 监控
 
-Symbol nodes can monitor blockchain state changes via WebSocket communication.
+Symbol节点可以透过WebSocket通讯监视区块链状态的更改。
 
-## 10.1 Listener configuration
+## 10.1 监听器配置
 
-Generate a WebSocket and configure a listener.
+生成 WebSocket 并配置监听器。
 
 ```js
 nsRepo = repo.createNamespaceRepository();
@@ -13,15 +13,15 @@ listener = new sym.Listener(wsEndpoint, nsRepo, WebSocket);
 listener.open();
 ```
 
-The format of the endpoints is as follows.
+端点的格式如下。
 
 - wss://{node url}:3001/ws
 
-If there is no communication, the listener is disconnected after one minute.
+如果没有通信，监听器将在一分钟后断开连接。
 
-## 10.2 Receiving transactions
+## 10.2 接收交易
 
-Detects transactions received by the account.
+检测帐户收到的交易。
 
 ```js
 listener.open().then(() => {
@@ -38,9 +38,9 @@ listener.open().then(() => {
 });
 ```
 
-After executing the above listener, announce the transaction to be sent to Alice.
+执行上述监听器后，宣告要发送给 Alice 的交易。
 
-###### Sample output
+###### 市例演示
 
 ```js
 > Promise {<pending>}
@@ -64,11 +64,11 @@ After executing the above listener, announce the transaction to be sent to Alice
     version: 1
 ```
 
-Unconfirmed transactions are received with transactionInfo.height=0.
+尚未确认的交易会显示transactionInfo.height=0。
 
-## 10.3 Block monitoring
+## 10.3 区块监控
 
-Detects newly generated blocks.
+检测新生成的块。
 
 ```js
 listener.open().then(() => {
@@ -77,7 +77,7 @@ listener.open().then(() => {
 });
 ```
 
-###### Sample output
+###### 市例演示
 
 ```js
 > Promise {<pending>}
@@ -103,13 +103,13 @@ listener.open().then(() => {
     version: 1
 ```
 
-If listener.newBlock() is used, communication occurs approximately every 30 seconds, making WebSocket disconnections less likely to occur.
+如果使用 listener.newBlock()，则通信约每30秒发生一次，这使得 WebSocket 断开连接的可能性较小。
 
-In rare cases, block generation may exceed one minute, in which case the listener must be reconnected. (Other factors may also cause disconnection, so if you want to be sure, supplement with onclose as described below.)
+在罕见的情况下，区块生成可能超过一分钟，此时需要重新连接监听器。 （其他因素也可能导致断开连接，因此如果要确保，请按照下面的说明补充使用 onclose。）
 
-## 10.4 Signature request
+## 10.4 签名请求
 
-Detects when a transaction requiring a signature occurs.
+检测何时发生需要签名的交易。
 
 ```js
 listener.open().then(() => {
@@ -120,7 +120,7 @@ listener.open().then(() => {
 });
 ```
 
-###### Sample output
+###### 市例演示
 
 ```js
 > AggregateTransaction
@@ -143,16 +143,16 @@ listener.open().then(() => {
     version: 1
 ```
 
-All Aggregate Transactions involving the specified address are detected.
-Whether a cosignature is required is determined by a separate filter.
+检测到涉及指定地址的所有聚合交易。
+是否需要共同签名由单独的筛选器决定。
 
-## 10.5 Tips for use
+## 10.5 使用提示
 
-### Continuous connection
+### 持续连接
 
-Select randomly from the node list and try to connect.
+从节点列表中随机选择并尝试连接。
 
-##### Connection to node
+##### 连接到节点
 
 ```js
 //Node list
@@ -191,10 +191,10 @@ function connectNode(nodes) {
 }
 ```
 
-Set a timeout value and re-select a node if connected node response is slow.
-Check the endpoint /node/health and reselect the node if the status is not normal.
+如果连接节点回应慢，设置超时值并重新选择节点。
+检查端点/节点/健康状况，如果状态不正常则重新选择节点。
 
-##### Creation of repositories
+##### 创建存储库
 
 ```js
 function createRepo(nodes) {
@@ -211,9 +211,9 @@ function createRepo(nodes) {
 }
 ```
 
-In rare cases, there are some nodes for which the /network/properties endpoint has not been freed, so the getEpochAdjustment() information is retrieved and checked. If it cannot be obtained, createRepo is read recursively.
+在罕见的情况下，有些节点可能还没有释放 /network/properties 端点，因此会获取并检查 getEpochAdjustment() 资讯。如果无法获取该资讯，将会进行递归读取 createRepo。
 
-##### Continuous connection listeners
+##### 持续连接监听器
 
 ```js
 async function listenerKeepOpening(nodes) {
@@ -236,18 +236,18 @@ async function listenerKeepOpening(nodes) {
 }
 ```
 
-If the listener closes, it reconnects.
+如果监听器关闭，它会重新连接。
 
-##### Start of listener.
+##### 启动监听器。
 
 ```js
 listener = await listenerKeepOpening(NODES);
 ```
 
-### Unsigned transaction auto-signature
+### U未签署交易自动签署
 
-Detect unsigned transactions, then sign and announce to the network.  
-Two patterns of detection are required: reception during initial screen display and during screen viewing.
+检测未签名的交易，然后签名并向网络公布。
+需要两种检测模式：在初始屏幕显示期间的接收和在屏幕观看期间的接收。
 
 ```js
 //read rxjs.operators
@@ -326,6 +326,6 @@ bondedSubscribe(bondedListener);
 bondedSubscribe(bondedHttp);
 ```
 
-##### Note
+##### 参考资料
 
-To avoid auto-signing scam transactions, make sure that you ensure a checking procedure is carried out, e.g. by checking the sender's account.
+为避免自动签署诈骗交易，请确保进行检查程序，例如检查发送方的帐户。
