@@ -1,39 +1,39 @@
-# 4.Transaction
-Updating data on the blockchain is done by announcing transactions to the network.
+# 4.交易
+在区块链上更新数据是通过向网络宣布交易来完成的。
 
-## 4.1 Transaction lifecycle
+## 4.1 交易生命周期
 
-Below is a description of the lifecycle of a transaction:
+以下是交易的生命周期描述：
 
-- Transaction creation
-  - Create transactions in an acceptable format for the blockchain.
-- Signature
-  - Sign the transaction with the account's privatekey.
-- Announcement
-  - Announce a signed transaction to any node on the network.
-- Unconfirmed state transactions
-  - Transactions accepted by a node are propagated to all nodes as unconfirmed state transactions.
-    - In a case where the maximum fee set for a transaction is not enough for the minimum fee set for each node, it will not be propagated to that node.
-- Confirmed transaction
-  - When an unconfirmed transaction is contained in a subsequent new block (generated approximately every 30 seconds), it becomes an approved transaction.
-- Rollbacks
-  - Transactions that could not reach a consensus agreement between nodes are rolled back to an unconfirmed state.
-    - Transactions that have expired or overflowed the cache are truncated.
-- Finalise
-  - Once the block is finalised by the finalisation process of the voting node, the transaction can be treated as final and data can no longer be rolled back.
+- 交易创建
+  - 以区块链可接受的格式创建交易。
+- 签名
+  - 使用帐户的私钥签署交易。
+- 宣告
+  - 向网络上的任何节点宣布已签名的交易。
+- 未确认状态交易
+  - 节点接受的交易作为未确认状态交易传播到所有节点。
+    - 如果为交易设置的最高费用不足以满足为每个节点设置的最低费用，则不会将其传播到该节点。
+- 确认交易
+  - 当一个未确认的交易包含在后续的新区块中（大约每 30 秒生成一次），它就成为一个已批准的交易。
+- 回滚
+  - 节点间无法达成共识的交易回滚到未确认状态。
+    - 已过期或已超出缓存的交易将被截断。
+- 完成
+  - 一旦区块被投票节点的终结过程终结，交易就可以被视为最终交易，数据不能再回滚。
 
-### What is a block?
+### 什么是块?
 
-Blocks are generated approximately every 30 seconds and are synchronised with other nodes on a block-by-block basis with priority given to transactions that have paid higher fees.
-If synchronisation fails, it is rolled back and the network repeats this process until consensus agreement is reached across all nodes.
+块大约每 30 秒生成一次，并逐块与其他节点同步，优先考虑支付较高费用的交易。
+如果同步失败，则回滚，网络重复此过程，直到所有节点达成共识。
 
-## 4.2 Transaction creation
+## 4.2 交易创建
 
-First of all, start with creating the most basic transfer transaction.
+首先，从创建最基本的转账交易开始。
 
-### Transfer transaction to Bob
+### 将交易转移给Bob
 
-Create the Bob address to send to.
+创建要发送到的 Bob 地址。
 ```js
 bob = sym.Account.generateNewAccount(networkType);
 console.log(bob.address);
@@ -42,7 +42,7 @@ console.log(bob.address);
 > Address {address: 'TDWBA6L3CZ6VTZAZPAISL3RWM5VKMHM6J6IM3LY', networkType: 152}
 ```
 
-Create transaction.
+创建交易。
 ```js
 tx = sym.TransferTransaction.create(
     sym.Deadline.create(epochAdjustment), //Deadline:Expiry date
@@ -53,55 +53,55 @@ tx = sym.TransferTransaction.create(
 ).setMaxFee(100); //Fees
 ```
 
-Each setting is explained below.
+每个设置解释如下。
 
-#### Expiry date
-2 hours is the SDK's default setting. 
-A maximum of 6 hours can be specified.
+#### 到期日
+2 小时是 SDK 的默认设置。
+最多可以指定 6 小时。
 ```js
 sym.Deadline.create(epochAdjustment,6)
 ```
 
-#### Message
-In a message field, up to 1023 bytes can be attached to a transaction.
-Also binary data can be sent as raw data.
+#### 信息
+在信息字段中，最多可以将 1023 个字节附加到交易。
+二进制数据也可以作为原始数据发送。
 
-##### Empty message
+##### 空消息
 ```js
 sym.EmptyMessage
 ```
 
-##### Plain message
+##### 纯信息
 ```js
 sym.PlainMessage.create("Hello Symbol!")
 ```
 
-##### Encrypted message
+##### 加密信息
 ```js
 sym.EncryptedMessage('294C8979156C0D941270BAC191F7C689E93371EDBC36ADD8B920CF494012A97BA2D1A3759F9A6D55D5957E9D');
 ```
 
-When you use EncryptedMessage, a flag (marker) is attached to the message that means 'the specified message is encrypted'. The explorer and wallet will use the flag as a reference to hide it or not decode the message. Encryption is not made by the method itself.
+当您使用加密消息时，会附加一个标志（标记）到消息上，表示“指定的消息已加密”。探索器和钱包将使用该标志作为参考，以隐藏它或不解密该消息。加密本身不是由该方法实现的。
 
 
-##### Raw data
+##### 原始数据
 ```js
 sym.RawMessage.create(uint8Arrays[i])
 ```
 
-#### Maximum fee
+#### 最高费用
 
-Although paying a small additional fee is better to ensure a transaction is successful, having some knowledge about network fees is a good idea.
-The account specifies the maximum fee it is willing to pay when it creates the transaction.
-On the other hand, nodes try to harvest only the transactions with the highest fees into a block at a time.
-This means that if there are many other transactions that are willing to pay more, the transaction will take longer to be approved.
-Conversely, if there are many other transactions that want to pay less and your maximum fee is larger, then the transaction will be processed with a fee below the maximum value you set.
+尽管支付少量额外费用可以更好地确保交易成功，但对网络费用有一些了解也是一个好主意。
+该账户指定了它在创建交易时愿意支付的最高费用。
+另一方面，节点尝试一次只将费用最高的交易收割到一个区块中。
+这意味着，如果有许多其他交易愿意支付更多费用，则该交易将需要更长的时间才能获得批准。
+反之，如果有很多其他交易想要少付，而你的最高手续费较大，那么交易将以低于你设置的最高金额的手续费进行处理。
 
-The fee paid is determined by a transaction size x feeMultiplier.
-If it was 176 bytes and your maxFee is set at 100, 17600µXYM = 0.0176XYM is the maximum value you allow to be paid as a fee for the transaction.
-There are two ways to specify this: as feeMultiplier = 100 or as maxFee = 17600.
+支付的费用由交易规模 x 费用乘数决定。
+如果它是 176 字节并且您的 maxFee 设置为 100，则 17600µXYM = 0.0176XYM 是您允许作为交易费用支付的最大值。
+有两种指定方式：feeMultiplier = 100 或 maxFee = 17600。
 
-##### To specify as feeMultiprier = 100
+##### 指定费用乘数为100
 ```js
 tx = sym.TransferTransaction.create(
   ,,,,
@@ -109,7 +109,7 @@ tx = sym.TransferTransaction.create(
 ).setMaxFee(100);
 ```
 
-##### To specify as maxFee = 17600
+##### 指定为最大费用 = 17600
 ```js
 tx = sym.TransferTransaction.create(
   ,,,,
@@ -118,18 +118,18 @@ tx = sym.TransferTransaction.create(
 );
 ```
 
-We will use the method of specifying feeMultiplier = 100.
+我们将使用指定费用乘数为100的方法。
 
-## 4.3 Signature and announcement
+## 4.3 签名和广播
 
-Sign the transaction which you create with the private key and announce it to any node.
+使用私钥签署您创建的交易并将其公布给任何节点。
 
-### Signature
+### 签名
 ```js
 signedTx = alice.sign(tx,generationHash);
 console.log(signedTx);
 ```
-###### Sample output
+###### 示例演示
 ```js
 > SignedTransaction
     hash: "3BD00B0AF24DE70C7F1763B3FD64983C9668A370CB96258768B715B117D703C2"
@@ -140,19 +140,19 @@ console.log(signedTx);
     type: 16724
 ```
 
-The Account class and generationHash value are required to sign the transaction.
+需要使用帐户和生成的哈希值对交易进行签名。
 
-generationHash
-- Testnet
+生成哈希
+- 测试网
     - 7FCCD304802016BEBBCD342A332F91FF1F3BB5E902988B352697BE245F48E836
-- Mainnet
+- 主网
     - 57F7DA205008026C776CB6AED843393F04CD458E0AA2D9F1D5F31A402072B2D6
 
-The generationHash value uniquely identifies the blockchain network.
-A signed transaction is created by interweaving the network's individual hash values so that they cannot be used by other networks with the same private key.
+生成的哈希值唯一标识区块链网络。
+通过交织网络的各个哈希值来创建已签署的交易，以便它们不能使用相同的私钥在其他网络中使用。
 
 
-### Announcement
+### 广播
 ```js
 res = await txRepo.announce(signedTx).toPromise();
 console.log(res);
@@ -161,29 +161,29 @@ console.log(res);
 > TransactionAnnounceResponse {message: 'packet 9 was pushed to the network via /transactions'}
 ```
 
-As in the script above, a response will be sent: `packet n was pushed to the network`, this means that the transaction has been accepted by the node.
-However, this only means that there were no anomalies in the formatting of the transaction.
-In order to maximise the response speed of the node, Symbol returns the response of the received result and disconnects the connection before verifying the content of the transaction. The response value is merely the receipt of this information. If there is an error in the format, the message response will be as follows:
+就像上面的脚本一样，将发送一个回应：“封包n已推送到网络”，这意味着该交易已被节点接受。
+然而，这仅仅意味着交易的格式没有异常。
+为了最大化节点的响应速度，Symbol会在验证交易内容之前返回接收到的结果并断开连接。回应值仅仅是此信息的收据。如果格式出现错误，则消息回应如下：
 
 
-##### Sample output of response if announcement fails
+##### 如果广播失败，回应的样本输出如下：
 ```js
 Uncaught Error: {"statusCode":409,"statusMessage":"Unknown Error","body":"{\"code\":\"InvalidArgument\",\"message\":\"payload has an invalid format\"}"}
 ```
 
-## 4.4 Confirmation
+## 4.4 确认
 
 
-### Status confirmation
+### 状态确认
 
-Check the status of transactions accepted by the node.
+检查节点接受的交易状态。
 
 ```js
 tsRepo = repo.createTransactionStatusRepository();
 transactionStatus = await tsRepo.getTransactionStatus(signedTx.hash).toPromise();
 console.log(transactionStatus);
 ```
-###### Sample output
+###### 示例演示
 ```js
 > TransactionStatus
     group: "confirmed"
@@ -193,9 +193,9 @@ console.log(transactionStatus);
     height: undefined
 ```
 
-When it is approved, the output shows  ` group: "confirmed"` .
+当被确认时，输出会显示 group: "confirmed"。
 
-If it was accepted but an error occurred, the output will show as follows. Rewrite the transaction and try announcing it again.
+如果接受但发生错误，输出将显示如下。重写交易并尝试再次广播它。
 
 ```js
 > TransactionStatus
@@ -206,19 +206,19 @@ If it was accepted but an error occurred, the output will show as follows. Rewri
     height: undefined
 ```
 
-If the transaction has not been accepted, the output will show the ResourceNotFound error as follows.
+如果该交易未被接受，则输出将显示以下的ResourceNotFound错误。
 ```js
 Uncaught Error: {"statusCode":404,"statusMessage":"Unknown Error","body":"{\"code\":\"ResourceNotFound\",\"message\":\"no resource exists with id '18AEBC9866CD1C15270F18738D577CB1BD4B2DF3EFB28F270B528E3FE583F42D'\"}"}
 ```
 
-This error occurs when the maximum fee specified in the transaction is less than the minimum fee set by the node, or if a transaction that is required to be announced as an aggregate transaction is announced as a single transaction.
+当交易中指定的最高手续费小于节点设置的最低手续费时，或者需要公告为聚合交易的交易被公告为单笔交易时，就会出现该错误。
 
-### Approval Confirmation
+### 批准确认
 
-It takes around 30 seconds for a transaction to be approved for the block.
+批准该块的交易大约需要 30 秒。
 
-#### Check with the Explorer
-Search in Explorer using the hash value that can be retrieved with signedTx.hash.
+#### 通过探索器进行检查。
+使用可以通过signedTx.hash检索的哈希值在探索器中搜索。
 
 ```js
 console.log(signedTx.hash);
@@ -227,18 +227,18 @@ console.log(signedTx.hash);
 > "661360E61C37E156B0BE18E52C9F3ED1022DCE846A4609D72DF9FA8A5B667747"
 ```
 
-- Mainnet　
+- 主网
   - https://symbol.fyi/transactions/661360E61C37E156B0BE18E52C9F3ED1022DCE846A4609D72DF9FA8A5B667747
-- Testnet　
+- 测试网
   - https://testnet.symbol.fyi/transactions/661360E61C37E156B0BE18E52C9F3ED1022DCE846A4609D72DF9FA8A5B667747
 
-#### Check with the SDK
+#### 检查SDK
 
 ```js
 txInfo = await txRepo.getTransaction(signedTx.hash,sym.TransactionGroup.Confirmed).toPromise();
 console.log(txInfo);
 ```
-###### Sample output
+###### 示例演示
 ```js
 > TransferTransaction
     deadline: Deadline {adjustedValue: 12883929118}
@@ -259,14 +259,14 @@ console.log(txInfo);
     type: 16724
     version: 1
 ```
-##### Note
+##### 注意事项
 
-Even when a transaction is confirmed in a block, the confirmation of the transaction still has the possibility of being revoked if a rollback occurs.
-After a block has been approved, the probability of a rollback occurring decreases as the approval process proceeds for several blocks.
-In addition, waiting for the finalisation block, which is carried out by voting nodes, ensures that the recorded data is certain.
+即使在区块中确认了一笔交易，如果发生回滚，该交易的确认仍有可能被撤销。
+在一个块被批准后，随着批准过程对几个块的进行，发生回滚的可能性会降低。
+此外，等待由投票节点执行的敲定区块，确保记录的数据是确定的。
 
-##### Sample script
-After announcing the transaction, it is useful to see the following script to keep track of the chain status.
+##### 示例脚本
+在广播交易之后，查看以下脚本以跟踪链的状态非常有用。
 ```js
 hash = signedTx.hash;
 tsRepo = repo.createTransactionStatusRepository();
@@ -276,9 +276,9 @@ txInfo = await txRepo.getTransaction(hash,sym.TransactionGroup.Confirmed).toProm
 console.log(txInfo);
 ```
 
-## 4.5 Transaction history
+## 4.5 交易纪录
 
-Get a list of the transaction history sent and received by Alice.
+获取 Alice 发送和接收的交易历史列表。
 ```js
 result = await txRepo.search(
   {
@@ -293,7 +293,7 @@ txes.forEach(tx => {
   console.log(tx);
 })
 ```
-###### Sample output
+###### 示例演示
 ```js
 > TransferTransaction
     type: 16724
@@ -320,23 +320,23 @@ txes.forEach(tx => {
       merkleComponentHash: "308472D34BE1A58B15A83B9684278010F2D69B59E39127518BE38A4D22EEF31D"
 ```
 
-TransactionType is as follows.
+交易类型如下。
 ```js
 {0: 'RESERVED', 16705: 'AGGREGATE_COMPLETE', 16707: 'VOTING_KEY_LINK', 16708: 'ACCOUNT_METADATA', 16712: 'HASH_LOCK', 16716: 'ACCOUNT_KEY_LINK', 16717: 'MOSAIC_DEFINITION', 16718: 'NAMESPACE_REGISTRATION', 16720: 'ACCOUNT_ADDRESS_RESTRICTION', 16721: 'MOSAIC_GLOBAL_RESTRICTION', 16722: 'SECRET_LOCK', 16724: 'TRANSFER', 16725: 'MULTISIG_ACCOUNT_MODIFICATION', 16961: 'AGGREGATE_BONDED', 16963: 'VRF_KEY_LINK', 16964: 'MOSAIC_METADATA', 16972: 'NODE_KEY_LINK', 16973: 'MOSAIC_SUPPLY_CHANGE', 16974: 'ADDRESS_ALIAS', 16976: 'ACCOUNT_MOSAIC_RESTRICTION', 16977: 'MOSAIC_ADDRESS_RESTRICTION', 16978: 'SECRET_PROOF', 17220: 'NAMESPACE_METADATA', 17229: 'MOSAIC_SUPPLY_REVOCATION', 17230: 'MOSAIC_ALIAS', 17232: 'ACCOUNT_OPERATION_RESTRICTION'
 ```
 
-MessageType is as follows.
+消息类型如下。
 ```js
 {0: 'PlainMessage', 1: 'EncryptedMessage', 254: 'PersistentHarvestingDelegationMessage', -1: 'RawMessage'}
 ```
-## 4.6 Aggregate Transactions
+## 4.6 聚合交易
 
-Aggregate transactions can merge multiple transactions into one.
-Symbol’s public network supports aggregate transactions containing up to 100 inner transactions (involving up to 25 different cosignatories).
-The content covered in subsequent chapters includes functions that require an understanding of aggregate transactions.
-This chapter introduces only the simplest of aggregate transactions.
+聚合事务可以将多个事务合并为一个。
+Symbol 的公共网络支持包含多达 100 个内部交易（涉及多达 25 个不同的联署人）的聚合交易。
+后续章节涵盖的内容包括需要了解聚合事务的函数。
+本章只介绍最简单的聚合事务。
 
-### A case only the signature of the originator is required
+### 一个案例只需要发起人的签名
 
 ```js
 bob = sym.Account.generateNewAccount(networkType);
@@ -372,32 +372,32 @@ signedTx = alice.sign(aggregateTx,generationHash);
 await txRepo.announce(signedTx).toPromise();
 ```
 
-First, create the transactions to be included in the aggregate transaction.
-It is not necessary to specify a Deadline at this time.
-When listing, add toAggregate to the generated transaction and specify the publickey of the sender account.
-Note that the sender and signing accounts **do not always match**.
-This is because of the possibility of scenarios such as 'Alice signing the transaction that Bob sent', which will be explained in subsequent chapters.
-This is the most important concept in using transactions on the Symbol blockchain.
-The transactions in this chapter are sent and signed by Alice, so the signature on the aggregate bonded transaction also specifies Alice.
+首先，创建要包含在聚合交易中的交易。
+目前没有必要指定截止日期。
+列举时，将生成的交易添加到聚合中，并指定发送方帐户的公钥。
+请注意，发送方和签名帐户不总是匹配的。
+这是因为可能会出现“Alice 签署 Bob 发送的交易”等场景，这将在后续章节中进行解释。
+这是在 Symbol 区块链上使用交易的最重要概念。
+本章中的交易由Alice发送和签署，因此聚合绑定交易上的签名也指定了Alice。
 
-## 4.7 Tips for use
+## 4.7 使用提示
 
-### Proof of existence
+### 存在证明
 
-The chapter on Accounts described how to sign and verify data by account.
-Putting this data into a transaction that is confirmed on the blockchain makes it impossible to delete the fact that an account has proved the existence of certain data at a certain time.
-It can be considered to have the same meaning as the possession between interested parties of a time-stamped electronic signature.（Legal decisions are left to experts）
+「帐户」章节介绍了如何使用帐户对数据进行签署和验证。
+将这些数据放入在区块链上得到确认的交易中，就不可能删除一个帐户证明某些数据在某个时间存在的事实。
+可以认为它具有与有关方拥有时间戳电子签名相同的含义。 （法律决策由专家决定）
 
-The blockchain updates data such as transactions with the existence of this "indelible fact that the account has proved".
-And also the blockchain can be used as proof of knowledge of a fact that nobody should have known about yet.
-This section describes two patterns in which data whose existence has been proven can be put on a transaction.
+区块链以这种“账户已经证明的不可磨灭的事实”的存在来更新交易等数据。
+区块链也可以用作证明某个事实的知识证明，而这个事实此时还没有被任何人知道。
+本节描述了两种模式，其中已经证明存在的数据可以放在交易中。
 
 
-#### Digital data hash value (SHA256) output method
+#### 数字数据哈希值（SHA256）输出方式
 
-The existence of a file can be proved by recording its digest value in the blockchain.
+文件的存在可以通过在区块链中记录其摘要值来证明。
 
-The calculation of the hash value using SHA256 for files in each operating system is as follows.
+各操作系统中文件使用SHA256计算哈希值的方法如下。
 ```sh
 #Windows
 certutil -hashfile WINfilepath SHA256
@@ -407,9 +407,9 @@ shasum -a 256 MACfilepath
 sha256sum Linuxfilepath
 ```
 
-#### Splitting large data
+#### 拆分大数据
 
-As the payload of a transaction can only contain 1023 bytes. Large data is split up and packed into the payload to make an aggregate transaction.
+由于交易的有效载荷只能包含 1023 个字节。大数据被拆分并打包到有效负载中以进行聚合交易。
 
 ```js
 bigdata = 'C00200000000000093B0B985101C1BDD1BC2BF30D72F35E34265B3F381ECA464733E147A4F0A6B9353547E2E08189EF37E50D271BEB5F09B81CE5816BB34A153D2268520AF630A0A0E5C72B0D5946C1EFEE7E5317C5985F106B739BB0BC07E4F9A288417B3CD6D26000000000198414140770200000000002A769FB40000000076B455CFAE2CCDA9C282BF8556D3E9C9C0DE18B0CBE6660ACCF86EB54AC51B33B001000000000000DB000000000000000E5C72B0D5946C1EFEE7E5317C5985F106B739BB0BC07E4F9A288417B3CD6D26000000000198544198205C1A4CE06C45B3A896B1B2360E03633B9F36BF7F22338B000000000000000066653465353435393833444430383935303645394533424446434235313637433046394232384135344536463032413837364535303734423641303337414643414233303344383841303630353343353345354235413835323835443639434132364235343233343032364244444331443133343139464435353438323930334242453038423832304100000000006800000000000000B2D4FD84B2B63A96AA37C35FC6E0A2341CEC1FD19C8FFC8D93CCCA2B028D1E9D000000000198444198205C1A4CE06C45B3A896B1B2360E03633B9F36BF7F2233BC089179EBBE01A81400140035383435344434373631364336433635373237396800000000000000B2D4FD84B2B63A96AA37C35FC6E0A2341CEC1FD19C8FFC8D93CCCA2B028D1E9D000000000198444198205C1A4CE06C45B3A896B1B2360E03633B9F36BF7F223345ECB996EDDB9BEB1400140035383435344434373631364336433635373237390000000000000000B2D4FD84B2B63A96AA37C35FC6E0A2341CEC1FD19C8FFC8D93CCCA2B028D1E9D5A71EBA9C924EFA146897BE6C9BB3DACEFA26A07D687AC4A83C9B03087640E2D1DDAE952E9DDBC33312E2C8D021B4CC0435852C0756B1EBD983FCE221A981D02';
