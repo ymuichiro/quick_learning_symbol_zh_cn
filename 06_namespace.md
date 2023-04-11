@@ -1,14 +1,14 @@
-# 6. Namespaces
+# 6. 命名空间
 
-Namespaces are human-readable text strings that can be rented and linked with an address or a mosaic.
-The name has a maximum length of 64 characters (the only allowed characters are `a` through `z`, `0` through `9`, `_` and `-`).
+命名空间是可租贷并与地址或马赛克关联的可读性高的文本字符串。
+名称最长可达64个字符（允许的字符只有 a 到 z、0 到 9、_ 和 -）。
 
-## 6.1 Fee calculation
+## 6.1 费用计算
 
-There is a rental fee associated with registering a namespace which is separate from the network fee.
-Rental fees fluctuate depending on network activity with costs increasing during busy network periods, therefore it is sensible to check fees before registering a namespace.
+注册命名空间需要支付租金，该费用与网络费用分开。
+租金根据网络活动而波动，在网络繁忙期间成本会增加，因此在注册命名空间之前检查费用是明智的。
 
-In the following example, the fees are calculated for a 365-day rental of a root namespace.
+在以下示例中，费用是针对根命名空间的 365 天租用计算的。
 
 
 ```js
@@ -22,31 +22,31 @@ rootNsRenatalFeeTotal = rentalBlock * rootNsperBlock;
 console.log("rentalBlock:" + rentalBlock);
 console.log("rootNsRenatalFeeTotal:" + rootNsRenatalFeeTotal);
 ```
-###### Sample output
+###### 市例演示
 ```js
 > rentalBlock:1051200
 > rootNsRenatalFeeTotal:210240000 //Approximately 210XYM
 ```
 
-The duration is specified by the number of blocks; one block is calculated as 30 seconds.
-There is a minimum rental period of 30 days (maximum 1825 days).
+持续时间由块数指定； 一个区块按30秒计算。
+最短租用期限为 30 天（最长为 1825 天）。
 
-Calculate the fee for acquiring a sub namespace.
+可以使用以下的程式码来计算获取子命名空间的费用
 
 ```js
 childNamespaceRentalFee = rentalFees.effectiveChildNamespaceRentalFee.compact()
 console.log(childNamespaceRentalFee);
 ```
-###### Sample output
+###### 市例演示
 ```js
 > 10000000 //10XYM
 ```
 
-There is no duration limit specified for the sub namespace. It can be used for as long as the root namespace is registered.
+没有为子命名空间指定持续时间限制。只要注册了根名称空间，它就可以使用。
 
-## 6.2 Rental
+## 6.2 租贷
 
-Rent a root namespace.(Example:xembook)
+租用根命名空间。 （示例：xembook）
 ```js
 
 tx = sym.NamespaceRegistrationTransaction.createRootNamespace(
@@ -59,7 +59,7 @@ signedTx = alice.sign(tx,generationHash);
 await txRepo.announce(signedTx).toPromise();
 ```
 
-Rent a sub namespace.(Example:xembook.tomato)
+租用一个子命名空间。 （示例：xembook.tomato）
 ```js
 subNamespaceTx = sym.NamespaceRegistrationTransaction.createSubNamespace(
     sym.Deadline.create(epochAdjustment),
@@ -71,7 +71,7 @@ signedTx = alice.sign(subNamespaceTx,generationHash);
 await txRepo.announce(signedTx).toPromise();
 ```
 
-You can also create a tier 2 sub namespace, for example in this case, defining xembook.tomato.morning:
+您还可以创建一个第 2 层子命名空间，例如在本例中，定义 xembook.tomato.morning：
 
 ```js
 subNamespaceTx = sym.NamespaceRegistrationTransaction.createSubNamespace(
@@ -83,9 +83,9 @@ subNamespaceTx = sym.NamespaceRegistrationTransaction.createSubNamespace(
 ```
 
 
-### Calculation of expiry date
+### 到期日的计算
 
-Calculates the expiry date of the rented root namespace.
+计算租用根命名空间的到期日期。
 
 ```js
 nsRepo = repo.createNamespaceRepository();
@@ -102,17 +102,17 @@ endDate = new Date(lastBlock.timestamp.compact() + remainHeight * 30000 + epochA
 console.log(endDate);
 ```
 
-Retrieve information about the namespace expiry and output the date and time of the remaining number of blocks subtracted from the current block height multiplied by 30 seconds (the average block generation interval).
-For testnet, the update deadline is postponed by about a day from the expiry date. And for the mainnet, this value is 30 days, please note it.
+获取有关命名空间到期的信息，输出剩余区块数的日期和时间，该区块数等于当前区块高度减去命名空间创建高度，然后乘以30秒（平均区块生成间隔）。
+对于测试网，更新截止日期从到期日起大约推迟一天。而对于主网，这个值为30天，请注意。
 
 
-###### Sample output
+###### 市例演示
 ```js
 > Tue Mar 29 2022 18:17:06 GMT+0900 (JST)
 ```
-## 6.3 Link
+## 6.3 链接
 
-### Link to an account
+### 链接到帐户
 ```js
 namespaceId = new sym.NamespaceId("xembook");
 address = sym.Address.createFromRawAddress("TBIL6D6RURP45YQRWV6Q7YVWIIPLQGLZQFHWFEQ");
@@ -126,9 +126,9 @@ tx = sym.AliasTransaction.createForAddress(
 signedTx = alice.sign(tx,generationHash);
 await txRepo.announce(signedTx).toPromise();
 ```
-The linked address does not have to be owned by you.
+链接地址不必归您所有。
 
-### Link to a mosaic
+### 链接到马赛克
 ```js
 namespaceId = new sym.NamespaceId("xembook.tomato");
 mosaicId = new sym.MosaicId("3A8416DB2D53xxxx");
@@ -143,13 +143,13 @@ signedTx = alice.sign(tx,generationHash);
 await txRepo.announce(signedTx).toPromise();
 ```
 
-Mosaics can only be linked if it is identical to the address at which the mosaic was created.
+只有当马赛克与创建马赛克的地址相同时，才能链接马赛克。
 
 
-## 6.4 Use as an UnresolvedAccount
+## 6.4 未解析的帐户形式
 
-Designate the destination as UnresolvedAccount to sign and announce the transaction without identifying the address.
-Transaction is executed for an account resolved on the chain side.
+将目的地指定为未解析的帐户形式以在不识别地址的情况下签署和宣布交易。
+将在链上解析的帐户执行交易。
 ```js
 namespaceId = new sym.NamespaceId("xembook");
 tx = sym.TransferTransaction.create(
@@ -162,7 +162,7 @@ tx = sym.TransferTransaction.create(
 signedTx = alice.sign(tx,generationHash);
 await txRepo.announce(signedTx).toPromise();
 ```
-Designate the sending mosaic as an UnresolvedMosaic to sign and announce the transaction without identifying the mosaic ID.
+将发送马赛克指定为未解决的马赛克，以在不识别马赛克 ID 的情况下签署和宣布交易。
 
 ```js
 namespaceId = new sym.NamespaceId("xembook.tomato");
@@ -182,7 +182,7 @@ signedTx = alice.sign(tx,generationHash);
 await txRepo.announce(signedTx).toPromise();
 ```
 
-To use XYM in a namespace, specify as follows.
+要在名称空间中使用 XYM，请按如下方式指定。
 
 ```js
 namespaceId = new sym.NamespaceId("symbol.xym");
@@ -193,18 +193,18 @@ namespaceId = new sym.NamespaceId("symbol.xym");
     id: Id {lower: 1106554862, higher: 3880491450}
 ```
 
-Id is held internally as a number `{lower: 1106554862, higher: 3880491450}` called Uint64.
+id 以内部数字 Uint64（{lower: 1106554862, higher: 3880491450}）表示。
 
-## 6.5 Reference
+## 6.5 参考资料
 
-Refer to the namespace linked to the address.
+引用链接到地址的命名空间。
 ```js
 nsRepo = repo.createNamespaceRepository();
 
 namespaceInfo = await nsRepo.getNamespace(new sym.NamespaceId("xembook")).toPromise();
 console.log(namespaceInfo);
 ```
-###### Sample output
+###### 市例演示
 ```js
 NamespaceInfo
     active: true
@@ -222,24 +222,24 @@ NamespaceInfo
     startHeight: UInt64 {lower: 324865, higher: 0}
 ```
 
-AliasType is as follows.
+别名类型如下。
 ```js
 {0: 'None', 1: 'Mosaic', 2: 'Address'}
 ```
 
-NamespaceRegistrationType is as follows.
+命名空间注册类型如下。
 ```js
 {0: 'RootNamespace', 1: 'SubNamespace'}
 ```
 
-Refer to the namespace linked to the mosaic.
+引用链接到马赛克的命名空间。
 ```js
 nsRepo = repo.createNamespaceRepository();
 
 namespaceInfo = await nsRepo.getNamespace(new sym.NamespaceId("xembook.tomato")).toPromise();
 console.log(namespaceInfo);
 ```
-###### Sample output
+###### 市例演示
 ```js
 NamespaceInfo
   > active: true
@@ -258,9 +258,9 @@ NamespaceInfo
     startHeight: UInt64 {lower: 324865, higher: 0}
 ```
 
-### Reverse lookup
+### 反向查找
 
-Check all namespaces linked to the address.
+检查链接到该地址的所有命名空间。
 ```js
 nsRepo = repo.createNamespaceRepository();
 
@@ -274,7 +274,7 @@ namespaceIds = accountNames[0].names.map(name=>{
 console.log(namespaceIds);
 ```
 
-Check all namespaces linked to the mosaic.
+检查链接到马赛克的所有命名空间。
 ```js
 nsRepo = repo.createNamespaceRepository();
 
@@ -289,15 +289,15 @@ console.log(namespaceIds);
 ```
 
 
-### Receipt reference
+### 收据参考
 
-Check how the blockchain has resolved the namespace used for the transaction.
+检查区块链如何解析用于交易的命名空间。
 
 ```js
 receiptRepo = repo.createReceiptRepository();
 state = await receiptRepo.searchAddressResolutionStatements({height:179401}).toPromise();
 ```
-###### Sample output
+###### 市例演示
 ```js
 data: Array(1)
   0: ResolutionStatement
@@ -311,28 +311,28 @@ data: Array(1)
       id: Id {lower: 646738821, higher: 2754876907}
 ```
 
-ResolutionType is as follows.
+分辨率类型如下。
 ```js
 {0: 'Address', 1: 'Mosaic'}
 ```
 
-#### Note
-As the namespace itself is rented, the link to the namespace used in past transactions may differ from the link to the current namespace.
+#### 注意事项
+由于命名空间本身是租贷的，过去交易中使用的命名空间链接可能与当前命名空间的链接不同。
 
-Always refer to your receipt if you want to know which account you were linked to at the time, e.g. when referring to historical data.
-
-
-## 6.6 Tips for use
-
-### Reciprocal links with external domains
-
-As duplicate namespaces are restricted by protocol, user can build the brand valuation of one's account on the Symbol by acquiring a namespace that is identical to an internet domain or a well-known trademark name in the real world, and by promoting recognition of the namespace from external sources like official websites, printed materials, etc.
-(For legal validity, please seek expert opinion.)
-Beware of hacking external domains and renewing your own Symbol namespaces duration.
+如果您想知道您当时链接到哪个帐户，请务必参考您的收据，例如 参考历史数据时。
 
 
-#### Note on accounts acquiring a namespace
-Namespaces are rented for a specified duration .
-At the moment, options for acquired namespaces are only abandonment or duration extension.
-In case of utilising a namespace in a system where operational transfers, etc. are considered, we recommend acquiring a namespace with a multisig account (Chapter 9).
+## 6.6 使用提示
+
+### 与外部域的相互链接
+
+由于协议限制了重复的命名空间，因此使用者可以在 Symbol 上通过取得与互联网域名或现实世界中知名商标名称相同的命名空间，并通过促进外部来源（如官方网站、印刷材料等）对该命名空间的认识，来建立自己帐户在品牌价值上的地位。
+（有关法律效力，请征求专家意见。）
+当心黑客攻击外部域并更新您自己的Symbol名称空间持续时间。
+
+
+#### 关于获取命名空间的帐户的注意事项
+命名空间在指定期限内租贷。
+目前，获取命名空间的选项只有放弃或延长期限。
+如果在考虑操作转帐等情况下使用命名空间，建议使用多重签名帐户（第9章）来购买命名空间。
 
